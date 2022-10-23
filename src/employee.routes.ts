@@ -15,6 +15,7 @@ employeeRouter.get('/', async (req, res) => {
     }
 })
 
+
 employeeRouter.get('/:id', async (req, res) => {
     try {
         const id = req?.params?.id;
@@ -30,6 +31,43 @@ employeeRouter.get('/:id', async (req, res) => {
         res.status(404).send('Failed to find the employee ID')
     }
 })
+
+
+employeeRouter.post('/', async (req, res) => {
+    try {
+        const employee = req.body;
+        const result = await collections.employees.insertOne(employee)
+        if (result.acknowledged) {
+            res.status(201).send(`Created a new employee: ID ${result.insertedId}`)
+        } else {
+            res.status(500).send('Failed to create a new  employee')
+        }
+    } catch (error) {
+        res.status(400).send('Failed to create the employee ID')
+    }
+})
+
+
+employeeRouter.put('/:id', async (req, res) => {
+    try {
+        const id = req?.params?.id;
+        console.log(id)
+        console.log(req.body)
+        const employee = req.body;
+        const query = { _id: new mongodb.ObjectId(id) };
+        const result = await collections.employees.updateOne(query, { $set: employee })
+        if (result && result.matchedCount) {
+            res.status(200).send(`We Updated Employee with id : ${id}`)
+        } else if (!result.matchedCount) {
+            res.status(404).send(`Failed to Find Removed Employee with id : ${id}`)
+        } else {
+            res.status(304).send(`Failed to Update Employee with id : ${id}`)
+        }
+    } catch (error) {
+        res.status(400).send(`Failed to Update the employee ID: Reason : ${error.message}`)
+    }
+})
+
 
 employeeRouter.delete('/:id', async (req, res) => {
     try {
@@ -49,37 +87,3 @@ employeeRouter.delete('/:id', async (req, res) => {
         res.status(400).send(error.message)
     }
 })
-
-employeeRouter.post('/', async (req, res) => {
-    try {
-        const employee = req.body;
-        const result = await collections.employees.insertOne(employee)
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new employee: ID ${result.insertedId}`)
-        } else {
-            res.status(500).send('Failed to create a new  employee')
-        }
-    } catch (error) {
-        res.status(400).send('Failed to create the employee ID')
-    }
-})
-
-employeeRouter.put('/:id', async (req, res) => {
-    try {
-        const id = req?.params?.id;
-        const employee = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-        const result = await collections.employees.updateOne(query, { $set: employee })
-        if (result && result.matchedCount) {
-            res.status(200).send(`We Updated Employee with id : ${id}`)
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to Find Removed Employee with id : ${id}`)
-        } else {
-            res.status(304).send(`Failed to Update Employee with id : ${id}`)
-        }
-    } catch (error) {
-        res.status(400).send(`Failed to Update the employee ID: Reason : ${error.message}`)
-    }
-})
-
-
