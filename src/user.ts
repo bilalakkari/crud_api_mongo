@@ -1,7 +1,6 @@
 import * as mongodb from 'mongodb'
 
-export interface User
-{    
+export interface User {
     username: string;
-    pwd:string;
+    pwd: string;
 }

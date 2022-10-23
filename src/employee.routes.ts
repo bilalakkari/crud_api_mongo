@@ -52,12 +52,11 @@ employeeRouter.put('/:id', async (req, res) => {
     try {
         const id = req?.params?.id;
         console.log(id)
-        console.log(req.body)
         const employee = req.body;
         const query = { _id: new mongodb.ObjectId(id) };
-        const result = await collections.employees.updateOne(query, { $set: employee })
+        const result = await collections.employees.updateOne(query, { $set: employee });
         if (result && result.matchedCount) {
-            res.status(200).send(`We Updated Employee with id : ${id}`)
+            res.status(200).send('`We Updated Employee with id : ${id}`')
         } else if (!result.matchedCount) {
             res.status(404).send(`Failed to Find Removed Employee with id : ${id}`)
         } else {
